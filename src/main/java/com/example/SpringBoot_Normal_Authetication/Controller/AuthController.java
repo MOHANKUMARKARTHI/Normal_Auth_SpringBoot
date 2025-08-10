@@ -14,6 +14,7 @@ import com.example.SpringBoot_Normal_Authetication.Service.AuthService;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+	
 
     @Autowired
     private AuthService authService;
@@ -34,17 +35,16 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
         return ResponseEntity.ok("Login successful. Your token: " + token);
+       
     }
 
     @GetMapping("/secure")
     public ResponseEntity<String> secureAccess(
             @RequestHeader("X-Auth-Email") String email,
             @RequestHeader("X-Auth-Token") String token) {
-
         if (!authService.isAuthenticated(email, token)) {
             return ResponseEntity.status(403).body("Access Denied: Invalid token.");
         }
-
         return ResponseEntity.ok("Welcome! You have access to secure content.");
     }
 }

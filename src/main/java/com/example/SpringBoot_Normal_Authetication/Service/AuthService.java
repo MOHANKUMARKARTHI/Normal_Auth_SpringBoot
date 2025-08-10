@@ -5,6 +5,8 @@ package com.example.SpringBoot_Normal_Authetication.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,6 +21,7 @@ import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class AuthService {
+	private static final Logger logger = LogManager.getLogger(AuthService.class);
 
     @Autowired
     private UserRepository userRepo;
@@ -27,7 +30,9 @@ public class AuthService {
     private JavaMailSender mailSender;
 
     public String register(String email) throws MessagingException {
+    	logger.info("inside register....");
         if (userRepo.findByEmail(email).isPresent()) {
+        	logger.error("The mail already present");
             return "User already registered.";
         }
 
@@ -51,6 +56,7 @@ public class AuthService {
 
         User user = userOpt.get();
         if (BCrypt.checkpw(inputPassword, user.getEncryptedPassword())) {
+        	logger.debug("Checking the UserPassword and db Password");
             String newToken = UUID.randomUUID().toString();
             user.setToken(newToken);
             userRepo.save(user);
