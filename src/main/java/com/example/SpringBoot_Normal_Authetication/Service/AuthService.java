@@ -29,7 +29,7 @@ public class AuthService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public String register(String email) throws MessagingException {
+    public String register(String email) throws Exception {
     	logger.info("inside register....");
         if (userRepo.findByEmail(email).isPresent()) {
         	logger.error("The mail already present");
@@ -55,12 +55,16 @@ public class AuthService {
         if (userOpt.isEmpty()) return null;
 
         User user = userOpt.get();
+        try {
         if (BCrypt.checkpw(inputPassword, user.getEncryptedPassword())) {
         	logger.debug("Checking the UserPassword and db Password");
             String newToken = UUID.randomUUID().toString();
             user.setToken(newToken);
             userRepo.save(user);
             return newToken;
+        }
+        }catch(Exception e) {
+        	logger.error("Login exception handled",email);
         }
         return null;
     }

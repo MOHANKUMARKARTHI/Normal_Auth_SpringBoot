@@ -35,20 +35,20 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 			<exclusions>
-			  <exclusion>
-			    <groupId>org.springframework.boot</groupId>
-			    <artifactId>spring-boot-starter-logging</artifactId>
-			  </exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
-			  <exclusion>
-			    <groupId>org.springframework.boot</groupId>
-			    <artifactId>spring-boot-starter-logging</artifactId>
-			  </exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -79,7 +79,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j2</artifactId>
-			<version>3.4.3</version>
+		</dependency>
+		<!--
+		https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
 	</dependencies>
