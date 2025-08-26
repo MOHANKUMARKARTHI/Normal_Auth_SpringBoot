@@ -3,7 +3,7 @@ package com.example.SpringBoot_Normal_Authetication.Entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class User {
@@ -14,7 +14,9 @@ public class User {
 
 	    private String email;
 	    private String encryptedPassword;
-	    private String token;
+	    
+	    @Column(length = 1000)
+	    private String jwtToken;
 	    
 		public Long getId() {
 			return id;
@@ -34,12 +36,13 @@ public class User {
 		public void setEncryptedPassword(String encryptedPassword) {
 			this.encryptedPassword = encryptedPassword;
 		}
-		public String getToken() {
-			return token;
+		public String getJwtToken() {
+			return jwtToken;
 		}
-		public void setToken(String token) {
-			this.token = token;
+		public void setJwtToken(String jwtToken) {
+			this.jwtToken = jwtToken;
 		}
+		
 	    
 	    
 }

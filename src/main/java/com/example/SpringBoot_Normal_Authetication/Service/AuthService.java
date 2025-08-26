@@ -10,6 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,12 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepo;
+    
+    @Autowired
+    AuthenticationManager authManager;
+    
+    @Autowired
+    JwtService jwtService;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -42,7 +51,6 @@ public class AuthService {
         User user = new User();
         user.setEmail(email);
         user.setEncryptedPassword(encryptedPassword);
-        user.setToken(null); // No token during registration
 
         userRepo.save(user);
         sendEmail(email, rawPassword);
@@ -52,27 +60,40 @@ public class AuthService {
 
     public String login(String email, String inputPassword) {
         Optional<User> userOpt = userRepo.findByEmail(email);
-        if (userOpt.isEmpty()) return null;
 
-        User user = userOpt.get();
-        try {
-        if (BCrypt.checkpw(inputPassword, user.getEncryptedPassword())) {
-        	logger.debug("Checking the UserPassword and db Password");
-            String newToken = UUID.randomUUID().toString();
-            user.setToken(newToken);
-            userRepo.save(user);
-            return newToken;
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+
+            // check password with BCrypt
+            if (BCrypt.checkpw(inputPassword, user.getEncryptedPassword())) {
+                // generate JWT token
+                String token = jwtService.generateToken(email);
+
+                // store token in DB (optional)
+                user.setJwtToken(token);
+                userRepo.save(user);
+
+                return token;
+            } else {
+                return null; // password mismatch
+            }
+        } else {
+            return null; // user not found
         }
-        }catch(Exception e) {
-        	logger.error("Login exception handled",email);
-        }
-        return null;
     }
 
-    public boolean isAuthenticated(String email, String token) {
+    public boolean isAuthenticated(String email, String jwtToken) {
         Optional<User> userOpt = userRepo.findByEmail(email);
-        return userOpt.isPresent() && token.equals(userOpt.get().getToken());
+
+        if (userOpt.isEmpty()) {
+            return false;
+        }
+        if (!jwtService.validateToken(jwtToken, email)) {
+            return false;
+        }
+        return jwtToken.equals(userOpt.get().getJwtToken());
     }
+
 
     private String generateRandomPassword() {
         return UUID.randomUUID().toString().substring(0, 8);

@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
         String token = authService.login(email, password);
-        if (token == null) {
+        if (email == null) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
         return ResponseEntity.ok("Login successful. Your token: " + token);
